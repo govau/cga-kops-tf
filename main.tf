@@ -23,10 +23,14 @@ resource "aws_s3_bucket" "kops_state_store" {
 }
 
 locals {
+  # We are deploying kops into an existing VPC. Kops will create 6 subnets. We
+  # will base the CIDR's for each from this number - this number is chosen so
+  # as not to collide with other existing subnets in cga.
+  # https://github.com/kubernetes/kops/blob/master/docs/run_in_existing_vpc.md
   base_cluster_cidr = 44
 }
 
-// DNS TXT record to pass env specific metadata/config to the kops installer
+# DNS TXT record to pass env specific metadata/config to the kops installer
 resource "aws_route53_record" "cld_internal_net_kops_txt" {
   zone_id = "${var.cld_internal_zone_id}"
   name    = "kops.cld.internal."
